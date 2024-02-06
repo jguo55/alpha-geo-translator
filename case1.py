@@ -38,8 +38,14 @@ class Statement:
                 "incenter": "Construct " + v[0] + " as the incenter of " + v[1] + v[2] + v[3],
                 "incenter2": "Construct " + v[3] + " as the incenter of " + v[4] + v[5] + v[6] + " with touchpoints " + v[0] + ", " + v[1] + ", " + v[2],
                 "excenter": "Construct " + v[0] + " as the excenter of " + v[1] + v[2] + v[3],
-                "excenter2": "Construct " + v[0] + " as the excenter of " + v[1] + v[2] + v[3] + " with touchpoints " + v[0] + ", " + v[1] + ", " + v[2],
+                "excenter2": "Construct " + v[0] + " as the excenter of " + v[4] + v[5] + v[6] + " with touchpoints " + v[0] + ", " + v[1] + ", " + v[2],
                 "centroid": "Construct " + v[0] + " as the centroid of " + v[1] + v[2] + v[3],
+
+
+
+
+
+
                 "midpointcircle": "Construct " + v[0] + ", " + v[1] + ", " + v[2] + " as the midpoints of triangle " + v[1] + v[2] + v[3] + ", and " + v[5] + " as the circumcenter of " + v[0] + v[1] + v[2],
                 "isos": "Construct " + v[0] + ", " + v[1] + ", " + v[2] + " such that " + v[0] + v[1] + " = " + v[0] + v[2],
                 "tangent": "Construct " + v[0] + " such that " + v[0] + v[2] + " is perpendicular to " + v[1] + v[2],
@@ -76,6 +82,10 @@ class Statement:
     def getType(self):
         return self.type
 
+
+class Translator:
+    def __init__(self):
+        pass
 
 #if this solution is inefficient then unlucky but im not quite good enough to figure out how to make it better
 #Issues/todo:
