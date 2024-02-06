@@ -3,27 +3,8 @@ import re
 inp = "a b = segment a b; g1 = on_tline g1 a a b; g2 = on_tline g2 b b a; m = on_circle m g1 a, on_circle m g2 b; n = on_circle n g1 a, on_circle n g2 b; c = on_pline c m a b, on_circle c g1 a; d = on_pline d m a b, on_circle d g2 b; e = on_line e a c, on_line e b d; p = on_line p a n, on_line p c d; q = on_line q b n, on_line q c d ? cong e p e q"
 parts = re.split('[;,]', inp)
 parts = [p.strip() for p in parts] #couldn't figure out how to get re to strip the whitespace automatically, easy optimization if possible
-
-class Statement:
-    def __init__(self, s):
-        #classifies the statement on init
-        self.vars = s.split(" ") #[a,b,=,segment,a,b] anything after the equals sign we don't need tbh
-        self.equals = False
-        try:
-            ei = self.vars.index("=") + 1
-            for i in range(ei):
-                del i #real optimization
-                self.vars.pop(0)
-        except:
-            pass
-        self.type = self.vars.pop(0)
-    
-    def translate(self): #v[0] is the subject, v[1:-1] are parameters
-        v = [i.upper() for i in self.vars]
-        while len(v) < 7: #avoid out of bounds errors, there's definitely a better way to do this
-            v.append("")
-        try:
-            translation = { #idk how to make it so i can define the translation dictionary just one time
+'''
+translation = { #idk how to make it so i can define the translation dictionary just one time
                 "angle_bisector": "Construct a point " + v[0] + " on the angle bisector of ∠" + v[1] + v[2] + v[3],
                 "angle_mirror": "Construct a point " + v[0] + " such that " + v[2] + v[3] + " is the bisector of ∠" + v[1] + v[2] + v[0],
                 "circle": "Construct point " + v[0] + " as the circumcenter of " + v[1] + ", " + v[2] + ", " + v[3],
@@ -72,20 +53,28 @@ class Statement:
                 "triangle": "Construct triangle " + v[0] + v[1] + v[2],
                 "triangle12": "Construct triangle " + v[0] + v[1] + v[2] + " with " + v[0] + v[1] + ":" + v[0] + v[2] + " = 1:2",
                 }
-            return(translation[self.getType()])
+'''
+translate = {"segment": lambda l: f"Construct 2 distinct points {l[0]}, {l[1]}"}
+class Statement:
+    def __init__(self, s):
+        #classifies the statement on init
+        self.vars = s.split(" ") #[a,b,=,segment,a,b] anything after the equals sign we don't need tbh
+        self.equals = False
+        try:
+            ei = self.vars.index("=") + 1
+            for i in range(ei):
+                del i #real optimization
+                self.vars.pop(0)
         except:
-            return self.type + "(untranslated); "
+            pass
+        self.type = self.vars.pop(0)
 
     def getVars(self):
         return self.vars
     
     def getType(self):
         return self.type
-
-
-class Translator:
-    def __init__(self):
-        pass
+        
 
 #if this solution is inefficient then unlucky but im not quite good enough to figure out how to make it better
 #Issues/todo:
@@ -95,8 +84,13 @@ class Translator:
 
 sparts = [Statement(p) for p in parts] #convert string to statement object
 
+for i in sparts: #translate each statement object into string
+    print(translate[i.getType()](i.getVars()))
+
+'''
 output = ""
 for i in range(len(sparts)-1): #translate each statement object into string
     output += sparts[i].translate() + "; "
 output += parts[-1] #last statement is always question
 print(output)
+'''
