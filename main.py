@@ -117,10 +117,10 @@ for linect in range(len(input)):
         for i in range(len(sparts)): #translate each statement object into string
             p = sparts[i]
             try:
-                if len(p.getlside()) == 0:
+                if len(p.getlside()) == 0: #for comma statements
                     prev = sparts[i-1].getlside()
                     prev.reverse()
-                    [p.addVar(j) for j in prev if j not in p.getVars()]
+                    [p.addVar(j) for j in prev if j not in p.getVars()] #only add if not already there (case1 will already have it)
                 output += translate[p.getType()](p.getVars()) + ". "
                 print(p.getVars())
             except:
