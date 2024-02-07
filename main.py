@@ -2,6 +2,7 @@ import re
 
 #TODO
 #1. Case 2 logic (classify, then just get right and left vars and add throw them into vars array)
+#1.5. need to get subject from previous statement (for case 2)
 #2. Untranslated statements: eqangle, coll, cyclic, eqratio, perp, para
 translate = {
     "segment": lambda l: f"Construct 2 distinct points {l[0]}, {l[1]}",
@@ -67,19 +68,23 @@ def tangent(l): #this one has 2 definitions
         return f"Construct points {l[0]}, {l[1]} as the tangent touch points from {l[2]} to circle ({l[3]}, {l[4]})"
     else:
         return "tangent (untranslated)"
-    
+
 class Statement:
     def __init__(self, s):
-        #classifies the statement on init
-        self.vars = s.split(" ") #[b,c,=,segment]
-        try: #if there's no equals sign then it's just a comma case
-            ei = self.vars.index("=") + 1
-            for i in range(ei):
-                del i
-                self.vars.pop(0)
-        except:
-            pass
-        self.type = self.vars.pop(0)
+        self.separated = s.split(" ")
+        self.vars = []
+        self.lside = []
+        try: #=
+            eind = self.separated.index("=")
+            self.type = self.separated.pop(eind+1)
+            self.lside = self.separated[0:eind]
+            self.rside = self.separated[eind+1:]
+            [self.vars.append(i) for i in self.lside]
+            [self.vars.append(value) for value in self.rside if value not in self.lside]
+        except: #,
+            self.type=self.separated.pop(0)
+            [self.vars.append(i) for i in self.separated]
+        self.lside = [i.upper() for i in self.lside]
         self.vars = [i.upper() for i in self.vars]
 
     def getVars(self):
@@ -87,6 +92,12 @@ class Statement:
     
     def getType(self):
         return self.type
+    
+    def addVar(self, l):
+        self.vars.insert(0, l)
+
+    def getlside(self):
+        return self.lside
 
 
 inpfile = open(r"input.txt", "r")
@@ -103,11 +114,17 @@ for linect in range(len(input)):
 
         sparts = [Statement(p) for p in parts] #convert string to statement object
 
-        for i in sparts: #translate each statement object into string
+        for i in range(len(sparts)): #translate each statement object into string
+            p = sparts[i]
             try:
-                output += translate[i.getType()](i.getVars()) + ". "
+                if len(p.getlside()) == 0:
+                    prev = sparts[i-1].getlside()
+                    prev.reverse()
+                    [p.addVar(j) for j in prev if j not in p.getVars()]
+                output += translate[p.getType()](p.getVars()) + ". "
+                print(p.getVars())
             except:
-                output += i.getType() + " " +   ' '.join(i.getVars()) + " (function untranslated). "
+                output += p.getType() + " " + "(function untranslated). "
         output += "\n"
     else:
         output = input[linect]
