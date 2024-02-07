@@ -1,10 +1,7 @@
-#case 1: rightside includes leftside (subject of type) (easier case)
-#case 2: vars are on both left and rightside
-#TO DO:
-#1. file input, get problem names and content from source txt
-#2. Case 2 logic (classify, then just get right and left vars and add throw them into vars array)
-#3. output txt of translated problems
 import re
+
+#TODO
+#1. Case 2 logic (classify, then just get right and left vars and add throw them into vars array)
 
 translate = {
     "segment": lambda l: f"Construct 2 distinct points {l[0]}, {l[1]}",
@@ -95,7 +92,7 @@ class Statement:
 
 inpfile = open(r"input.txt", "r")
 input = inpfile.readlines()
-outfile = open("translated", "w", encoding='utf-8')
+outfile = open("translated.txt", "w", encoding='utf-8')
 
 
 for linect in range(len(input)):
