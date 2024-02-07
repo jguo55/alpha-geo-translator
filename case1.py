@@ -1,8 +1,10 @@
 #case 1: rightside includes leftside (subject of type) (easier case)
+#case 2: vars are on both left and rightside
+#TO DO:
+#1. file input, get problem names and content from source txt
+#2. Case 2 logic (classify, then just get right and left vars and add throw them into vars array)
+#3. output txt of translated problems
 import re
-inp = "a b = segment a b; g1 = on_tline g1 a a b; g2 = on_tline g2 b b a; m = on_circle m g1 a, on_circle m g2 b; n = on_circle n g1 a, on_circle n g2 b; c = on_pline c m a b, on_circle c g1 a; d = on_pline d m a b, on_circle d g2 b; e = on_line e a c, on_line e b d; p = on_line p a n, on_line p c d; q = on_line q b n, on_line q c d ? cong e p e q"
-parts = re.split('[;,?]', inp)
-parts = [p.strip() for p in parts] #couldn't figure out how to get re to strip the whitespace automatically, easy optimization if possible
 
 translate = {
     "segment": lambda l: f"Construct 2 distinct points {l[0]}, {l[1]}",
@@ -13,7 +15,7 @@ translate = {
     "cong": lambda l: f"Show that {l[0]}{l[1]} = {l[2]}{l[3]}",
     "angle_bisector": lambda l: f"Construct point {l[0]} on the angle bisector of ∠{l[1]}{l[2]}{l[3]}",
     "angle_mirror": lambda l: f"Construct point {l[0]} such that {l[2]}{l[3]} is the bisector of ∠{l[1]}{l[2]}{l[0]}",
-    "circumcenter": lambda l: f"Construct point {l[0]} as the circumcenter of {l[1]}{l[2]}{l[3]}",
+    "circle": lambda l: f"Construct point {l[0]} as the circumcenter of {l[1]}{l[2]}{l[3]}",
     "eq_quadrilateral": lambda l: f"Construct quadrilateral {l[0]}{l[1]}{l[2]}{l[3]} with {l[0]}{l[3]} = {l[1]}{l[2]}",
     "eq_trapezoid": lambda l: f"Construct trapezoid {l[0]}{l[1]}{l[2]}{l[3]} with {l[0]}{l[3]} = {l[1]}{l[2]}",
     "eqtriangle": lambda l: f"Construct {l[0]} such that {l[0]}{l[1]}{l[2]} is an equilateral triangle",
@@ -90,12 +92,30 @@ class Statement:
     def getType(self):
         return self.type
 
-sparts = [Statement(p) for p in parts] #convert string to statement object
 
-output = ""
-for i in sparts: #translate each statement object into string
-    try:
-        output += translate[i.getType()](i.getVars()) + ". "
-    except:
-        output += i.getType() + ' '.join(i.getVars()) + " (function untranslated). "
-print(output)
+inpfile = open(r"input.txt", "r")
+input = inpfile.readlines()
+outfile = open("translated", "w", encoding='utf-8')
+
+
+for linect in range(len(input)):
+    output = ""
+    if linect % 2 == 1:
+        prob = input[linect]
+        parts = re.split('[;,?]', prob)
+        parts = [p.strip() for p in parts] #couldn't figure out how to get re to strip the whitespace automatically, easy optimization if possible
+
+        sparts = [Statement(p) for p in parts] #convert string to statement object
+
+        for i in sparts: #translate each statement object into string
+            try:
+                output += translate[i.getType()](i.getVars()) + ". "
+            except:
+                output += i.getType() + " " +   ' '.join(i.getVars()) + " (function untranslated). "
+        output += "\n"
+    else:
+        output = input[linect]
+    outfile.write(output)
+
+inpfile.close()
+outfile.close()
