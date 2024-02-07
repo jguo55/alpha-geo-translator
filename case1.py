@@ -2,7 +2,7 @@ import re
 
 #TODO
 #1. Case 2 logic (classify, then just get right and left vars and add throw them into vars array)
-
+#2. Untranslated statements: eqangle, coll, cyclic, eqratio, perp, para
 translate = {
     "segment": lambda l: f"Construct 2 distinct points {l[0]}, {l[1]}",
     "on_tline": lambda l: f"Construct {l[0]} such that {l[0]}{l[1]} is perpendicular to {l[2]}{l[3]}",
@@ -27,7 +27,7 @@ translate = {
     "excenter2": lambda l: f"Construct {l[3]} as the excenter of {l[4]}{l[5]}{l[6]} with touchpoints {l[0]}, {l[1]}, {l[2]}",
     "centroid": lambda l: f"Construct {l[0]} as the centroid of {l[1]}{l[2]}{l[3]}",
     "midpointcircle": lambda l: f"Construct {l[0]}, {l[1]}, {l[2]} as the midpoints of triangle {l[4]}{l[5]}{l[6]}, and {l[3]} as the circumcenter of {l[0]}{l[1]}{l[2]}",
-    "isos": lambda l: f"Construct {l[0]}, {l[1]}, {l[2]} such that {l[0]}{l[1]}={l[0]}{l[2]}",
+    "iso_triangle": lambda l: f"Construct {l[0]}, {l[1]}, {l[2]} such that {l[0]}{l[1]}={l[0]}{l[2]}", #table uses isos, but example uses iso_triangle
     "tangent": lambda l: tangent(l),
     "midpoint": lambda l: f"Construct {l[0]} as the midpoint of {l[1]}{l[2]}",
     "mirror": lambda l: f"Construct {l[0]} such that {l[2]} is the midpoint of {l[1]}{l[0]}",
@@ -71,8 +71,7 @@ def tangent(l): #this one has 2 definitions
 class Statement:
     def __init__(self, s):
         #classifies the statement on init
-        self.vars = s.split(" ") #[a,b,=,segment,a,b]
-        self.equals = False
+        self.vars = s.split(" ") #[b,c,=,segment]
         try: #if there's no equals sign then it's just a comma case
             ei = self.vars.index("=") + 1
             for i in range(ei):
